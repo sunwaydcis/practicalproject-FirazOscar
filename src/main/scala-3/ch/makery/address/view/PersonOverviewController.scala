@@ -45,7 +45,6 @@ class PersonOverviewController():
     )
 
 
-
   private def showPersonDetails(person: Option[Person]): Unit =
     person match
       case Some(person) =>
@@ -56,7 +55,8 @@ class PersonOverviewController():
         cityLabel.text <== person.city;
         postalCodeLabel.text <== person.postalCode.delegate.asString()
         birthdayLabel.text   <== Bindings.createStringBinding(
-          () =>{ person.date.value.asString }, person.date)
+          () =>{ person.date.value.asString }, person.date
+        )
 
       case None =>
         // Person is null, remove all the text.
@@ -72,7 +72,11 @@ class PersonOverviewController():
         streetLabel.text = ""
         postalCodeLabel.text = ""
         cityLabel.text = ""
-        birthdayLabel.text =""
+        birthdayLabel.text = ""
+
+  /**
+   * Called when the user clicks on the delete button.
+   */
   @FXML
   def handleDeletePerson(action: ActionEvent) =
     val selectedIndex = personTable.selectionModel().selectedIndex.value
@@ -81,6 +85,30 @@ class PersonOverviewController():
     else
       // Nothing selected.
       val alert = new Alert(AlertType.Warning):
+        initOwner(MainApp.stage)
+        title = "No Selection"
+        headerText = "No Person Selected"
+        contentText = "Please select a person in the table."
+      alert.showAndWait()
+  
+  @FXML
+  def handleNewPerson(action: ActionEvent) =
+    val person = new Person("", "")
+    val okClicked = MainApp.showPersonEditDialog(person);
+    if (okClicked) then
+      MainApp.personData += person
+  
+  @FXML
+  def handleEditPerson(action: ActionEvent) =
+    val selectedPerson = personTable.selectionModel().selectedItem.value
+    if (selectedPerson != null) then
+      val okClicked = MainApp.showPersonEditDialog(selectedPerson)
+
+      if (okClicked) then showPersonDetails(Some(selectedPerson))
+
+    else
+      // Nothing selected.
+      val alert = new Alert(Alert.AlertType.Warning):
         initOwner(MainApp.stage)
         title = "No Selection"
         headerText = "No Person Selected"
