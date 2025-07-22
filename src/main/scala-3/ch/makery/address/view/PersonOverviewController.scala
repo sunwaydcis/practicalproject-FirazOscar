@@ -95,16 +95,20 @@ class PersonOverviewController():
   def handleNewPerson(action: ActionEvent) =
     val person = new Person("", "")
     val okClicked = MainApp.showPersonEditDialog(person);
-    if (okClicked) then
+    if (okClicked) then {
       MainApp.personData += person
-  
+      person.save()
+      }
   @FXML
   def handleEditPerson(action: ActionEvent) =
     val selectedPerson = personTable.selectionModel().selectedItem.value
     if (selectedPerson != null) then
       val okClicked = MainApp.showPersonEditDialog(selectedPerson)
 
-      if (okClicked) then showPersonDetails(Some(selectedPerson))
+      if (okClicked) then {
+        showPersonDetails(Some(selectedPerson))
+        selectedPerson.save()
+      }
 
     else
       // Nothing selected.
